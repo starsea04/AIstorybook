@@ -1,0 +1,59 @@
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+spring:
+  servlet:
+    multipart:
+      max-file-size: 6MB
+      max-request-size: 7MB
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: storybook-api
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/storybook?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+  ai:
+    openai:
+      api-key: ${AI_API_KEY:}
+      base-url: ${AI_BASE_URL:https://api.deepseek.com}
+      chat:
+        options:
+          model: ${AI_CHAT_MODEL:deepseek-chat}
+          temperature: ${AI_TEMPERATURE:0.8}
+          max-tokens: ${AI_MAX_TOKENS:4096}
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+app:
+  speech:
+    key: ${AZURE_SPEECH_KEY:}
+    endpoint: ${AZURE_SPEECH_ENDPOINT:https://eastasia.api.cognitive.microsoft.com/}
+    voice-zh: ${AZURE_SPEECH_VOICE_ZH:zh-CN-XiaoshuangNeural}
+    voice-en: ${AZURE_SPEECH_VOICE_EN:en-US-JennyNeural}
+  db:
+    strict: ${DB_STRICT:true}
+  jwt:
+    secret: ${JWT_SECRET:local-development-key-change-this-before-deployment-0123456789}
+    expiration-ms: ${JWT_EXPIRATION_MS:604800000}
+  files:
+    directory: ${FILE_STORAGE_DIR:./uploads}
+    public-prefix: /files
+  ai:
+    image-base-url: ${IMAGE_BASE_URL:https://api-inference.modelscope.cn/}
+    image-api-key: ${IMAGE_API_KEY:}
+    image-model: ${IMAGE_MODEL:Qwen/Qwen-Image-2.1}
+    config-encryption-key: ${APP_AI_CONFIG_ENCRYPTION_KEY:}
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
