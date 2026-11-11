@@ -5,6 +5,7 @@
 backend/.env
 backend/.env.*
 !backend/.env.example
+docs
 
 # Build outputs and dependencies
 **/target/
