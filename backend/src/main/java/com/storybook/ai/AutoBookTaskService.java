@@ -266,7 +266,7 @@ public class AutoBookTaskService {
       long total = book.pages.size();
       long successes = book.pages.stream().filter(page -> "SUCCESS".equals(page.imageStatus)).count();
       List<Page> failed = book.pages.stream().filter(page -> "FAILED".equals(page.imageStatus)).toList();
-      if (!failed.isEmpty()) throw new IllegalStateException("插画生成失败，请重试第 " + failed.stream().map(page -> page.pageNo).map(String::valueOf).reduce((a,b)->a+"、"+b).orElse("") + " 页");
+      if (!failed.isEmpty()) throw new IllegalStateException("插画生成失败");
       if (successes == total) break;
       int imageProgress = total == 0 ? 90 : (int) (55 + 35 * successes / total);
       task.progress = Math.min(90, imageProgress);

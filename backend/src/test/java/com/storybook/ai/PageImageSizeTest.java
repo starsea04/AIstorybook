@@ -81,16 +81,15 @@ class PageImageSizeTest {
   @Test void rejectsIgnoredDimensionsInsteadOfSavingCroppedOrStretchedPages() throws Exception {
     image=png(760,1280);
     var ex=assertThrows(IllegalStateException.class,()->service(true).generatePageImage("penguin",1,List.of()));
-    assertTrue(ex.getMessage().contains("760x1280"));assertTrue(ex.getMessage().contains("1024x1280"));
+    assertEquals("插画生成失败",ex.getMessage());
     try(var files=Files.list(output)){assertEquals(0,files.count());}
   }
-  @Test void explainsWhenTheServerCannotSaveTheGeneratedImage() throws Exception {
+  @Test void keepsTheImageFailureMessageGenericWhenTheServerCannotSaveIt() throws Exception {
     Path blocked = output.resolve("not-a-directory");
     Files.writeString(blocked, "file");
     var ex = assertThrows(IllegalStateException.class,
         () -> service(true, blocked.toString()).generatePageImage("penguin", 1, List.of()));
-    assertTrue(ex.getMessage().contains("图片已生成，但保存到服务器失败"));
-    assertTrue(ex.getMessage().contains("FILE_STORAGE_DIR 写权限"));
+    assertEquals("插画生成失败", ex.getMessage());
   }
   @Test void characterPortraitsKeepTheirOwnConfiguredDimensions() throws Exception {
     image=png(768,768);

@@ -218,8 +218,6 @@ public class ImageTaskService {
   }
 
   private String shortMessage(Exception ex) {
-    String value = ex.getMessage();
-    if (value == null || value.isBlank()) return "插画生成失败，请检查模型配置后重试";
-    return value.length() > 240 ? value.substring(0, 240) : value;
+    return "插画生成失败";
   }
 }
