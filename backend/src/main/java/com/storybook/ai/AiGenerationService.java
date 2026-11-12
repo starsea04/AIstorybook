@@ -18,6 +18,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.security.MessageDigest;
 import java.util.regex.Matcher;
@@ -486,9 +487,16 @@ public class AiGenerationService {
             + "，与书页要求 " + page.size() + " 不符；请检查模型是否支持此尺寸");
     }
     Path dir = Path.of(fileDir).toAbsolutePath();
-    Files.createDirectories(dir);
     String name = "illustration-" + UUID.randomUUID() + ".png";
-    Files.write(dir.resolve(name), bytes);
+    Path target = dir.resolve(name);
+    try {
+      Files.createDirectories(dir);
+      Files.write(target, bytes);
+    } catch (IOException | SecurityException ex) {
+      throw new IllegalStateException("图片已生成，但保存到服务器失败（" + ex.getClass().getSimpleName() + "）："
+          + Objects.toString(ex.getMessage(), target.toString())
+          + "；请检查 FILE_STORAGE_DIR 写权限、磁盘空间和挂载状态", ex);
+    }
     return "/files/" + name;
   }
 

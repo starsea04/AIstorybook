@@ -54,9 +54,12 @@ class PageImageSizeTest {
   @AfterEach void stop() {server.stop(0);}
 
   private AiGenerationService service(boolean modelScope) {
+    return service(modelScope, output.toString());
+  }
+  private AiGenerationService service(boolean modelScope, String fileDir) {
     var beans = new DefaultListableBeanFactory();
     return new AiGenerationService(json,beans.getBeanProvider(JdbcTemplate.class),"","","","","",
-        "test-key",base+(modelScope?"/modelscope.cn":""),"Qwen/Qwen-Image-2.1","768","768","",output.toString());
+        "test-key",base+(modelScope?"/modelscope.cn":""),"Qwen/Qwen-Image-2.1","768","768","",fileDir);
   }
   private byte[] png(int width,int height) throws Exception {
     var bytes = new ByteArrayOutputStream();
@@ -80,6 +83,14 @@ class PageImageSizeTest {
     var ex=assertThrows(IllegalStateException.class,()->service(true).generatePageImage("penguin",1,List.of()));
     assertTrue(ex.getMessage().contains("760x1280"));assertTrue(ex.getMessage().contains("1024x1280"));
     try(var files=Files.list(output)){assertEquals(0,files.count());}
+  }
+  @Test void explainsWhenTheServerCannotSaveTheGeneratedImage() throws Exception {
+    Path blocked = output.resolve("not-a-directory");
+    Files.writeString(blocked, "file");
+    var ex = assertThrows(IllegalStateException.class,
+        () -> service(true, blocked.toString()).generatePageImage("penguin", 1, List.of()));
+    assertTrue(ex.getMessage().contains("图片已生成，但保存到服务器失败"));
+    assertTrue(ex.getMessage().contains("FILE_STORAGE_DIR 写权限"));
   }
   @Test void characterPortraitsKeepTheirOwnConfiguredDimensions() throws Exception {
     image=png(768,768);
